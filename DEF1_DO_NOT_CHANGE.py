@@ -9,10 +9,10 @@ import numpy as np
 import cv2
 
 MIN_MATCH_COUNT = 5;
-img1 = cv2.imread('carpet7.jpg',0) # queryImage
-img2 = cv2.imread('carpet2.jpg',0) # trainImage
-print img1.shape[0]
+img1 = cv2.imread('POP_TILES-A3-50x75-BW.jpg',0) # queryImage
 
+img2 = cv2.imread('horizontalmulti.jpg',0) # trainImage
+#img2 = cv2.resize(img2,None,fx=2, fy=2, interpolation =  cv2.INTER_AREA)
 
 # Initiate ORB detector
 orb = cv2.ORB_create(nfeatures=100000)
@@ -27,7 +27,7 @@ bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
 # Match descriptors.
 matches = bf.match(des1,des2)
-print des1
+#print des1
 # Sort them in the order of their distance.
 matches = sorted(matches, key = lambda x:x.distance)
 ############################################################
@@ -62,7 +62,8 @@ if len(good)>MIN_MATCH_COUNT:
     h,w = img1.shape
     pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
     dst = cv2.perspectiveTransform(pts,M)
-    img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
+    #img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
+    print "Match found!"
 else:
     print "Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT)
     matchesMask = None
@@ -73,7 +74,7 @@ draw_params = dict(matchColor = (0,255,0),
                    flags = 2)
 
 img3 = cv2.drawMatches(img1,kp1,img2,kp2,good,None,**draw_params)
-
+cv2.imwrite("IMAGE_NAME.png", img3);
 cv2.imshow('image',img3)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
